@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:p="http://www.springframework.org/schema/p"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:webflow-config="http://www.springframework.org/schema/webflow-config"
+xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd 
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config.xsd">
+<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+<property name="dataSource" ref="dataSource"/>
+<property name="hibernateProperties">
+<props>
+<prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+<prop key="hibernate.hbm2ddl.auto">update</prop>
+<prop key="hibernate.current_session_context_class">thread</prop> 
+<prop key="hibernate.show_sql">true</prop>  
+</props>
+</property>
+<property name="packagesToScan">
+<list>
+<value>com.ekart.model</value>
+</list>
+</property>
+</bean>
+<context:component-scan base-package="com.ekart"></context:component-scan>
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+<property name="driverClassName" value="org.h2.Driver"/>
+<property name="url" value="jdbc:h2:tcp://localhost/~/ekart"/>
+<property name="username" value="sa"/>
+<property name="password" value=""/>
+</bean>
+<context:annotation-config/>
+<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+<property name="host" value="smtp.gmail.com"/>
+<property name="username" value="programmerinit@gmail.com"/>
+<property name="password" value="servletsjsp"/>
+<property name="javaMailProperties">
+<props>
+<prop key="mail.smtp.auth">true</prop>
+<prop key="mail.smtp.port">587</prop>
+<prop key="mail.smtp.starttls.enable">true</prop>
+</props>
+</property>
+</bean>
+<webflow-config:flow-executor id="flowExecutor" flow-registry="flowRegistry" />
+
+    <webflow-config:flow-registry id="flowRegistry" base-path="/WEB-INF/views">
+        <webflow-config:flow-location path="/userCheckoutFlow.xml" id="checkout" />
+    </webflow-config:flow-registry>
+    <bean id="flowHandlerMapping" class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
+        <property name="flowRegistry" ref="flowRegistry" />
+        <property name="order" value="-1"/>
+    </bean>
+    <bean id="flowHandlerAdapter" class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
+        <property name="flowExecutor" ref="flowExecutor" />
+    </bean>
+</beans>

@@ -1,0 +1,23 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<http>
+	 <intercept-url pattern="/adminLogin*" access="ROLE_ADMIN"/>
+	<form-login  login-page="/login"  default-target-url="/adminLogin"/>
+	<intercept-url pattern="/userLogin**" access="ROLE_USER"/>
+	<form-login login-page="/login"  default-target-url="/userLogin"/>
+	<logout logout-success-url="/logout"/>
+	</http>
+	 <authentication-manager>
+	<authentication-provider>
+	<jdbc-user-service data-source-ref="dataSource" 
+	 users-by-username-query="select firstName,password,enabled from customer where firstname=?" 
+	authorities-by-username-query="select u1.firstname, u2.authority from customer u1, userrole u2 where u1.customerId= u2.userid and u1.firstName =?" />
+	</authentication-provider>
+	</authentication-manager>
+	
+	</beans:beans>
